@@ -1,7 +1,7 @@
 """
 Perform inference with
 1) 0 profile: baseline
-2) k profile: augmented model
+2) 1 profile: augmented model
 """
 
 import os

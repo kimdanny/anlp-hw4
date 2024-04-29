@@ -12,6 +12,10 @@ temp/
 # scripts
 scripts/
 
+# compute logs
+logs/
+*.log
+
 # output files
 *.tsv
 *.csv

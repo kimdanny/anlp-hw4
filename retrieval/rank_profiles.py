@@ -180,7 +180,11 @@ def mean_pooling(token_embeddings, mask):
 
 def retrieve_top_k_with_contriver(
     contriver, tokenizer, corpus, profile, query, k, batch_size=16
-):
+) -> list[tuple]:
+    """
+    Returns list of tuples.
+    Each tuple is (document, score)
+    """
     query_tokens = tokenizer(
         [query], padding=True, truncation=True, return_tensors="pt"
     ).to("cuda:0")
@@ -201,10 +205,16 @@ def retrieve_top_k_with_contriver(
         temp_scores = output_query.squeeze() @ outputs_batch.T
         scores.extend(temp_scores.tolist())
     topk_values, topk_indices = torch.topk(torch.tensor(scores), k)
-    return [profile[m] for m in topk_indices.tolist()]
+    topk_values = topk_values.tolist()
+    topk_indices = topk_indices.tolist()
+    return [(profile[i], score) for score, i in zip(topk_values, topk_indices)]
 
 
-def retrieve_top_k_with_bm25(corpus, profile, query, k):
+def retrieve_top_k_with_bm25(corpus, profile, query, k) -> list[tuple]:
+    """
+    Returns list of tuples.
+    Each tuple is (document, score)
+    """
     tokenized_corpus = [x.split() for x in corpus]
     bm25 = BM25Okapi(tokenized_corpus)
     tokenized_query = query.split()
@@ -228,6 +238,12 @@ if __name__ == "__main__":
         required=True,
         help="bm25; contriever",
     )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        required=True,
+        help="lamp; lamp1000_usable",
+    )
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--use_date", action="store_true")
     parser.add_argument("--contriever_checkpoint", default="facebook/contriever")
@@ -236,14 +252,15 @@ if __name__ == "__main__":
 
     LAMP_NUM: int = args.lamp_num
     RANKER: str = args.ranker
+    DATASET: str = args.dataset
     BATCH_SIZE: int = args.batch_size
     INPUT_DATA_FP = os.path.join(
         os.path.dirname(CUR_DIR_PATH),
         "data",
-        "lamp1000_usable",
+        DATASET,
         f"{LAMP_NUM}_user_dev_inputs.json",
     )
-    OUTPUT_RANKING_DIR_PATH = os.path.join(CUR_DIR_PATH, "retrieval_results", RANKER)
+    OUTPUT_RANKING_DIR_PATH = os.path.join(CUR_DIR_PATH, "retrieval_results", DATASET, RANKER)
     os.makedirs(OUTPUT_RANKING_DIR_PATH, exist_ok=True)
     OUTPUT_RANKING_FP = os.path.join(OUTPUT_RANKING_DIR_PATH, f"{LAMP_NUM}.json")
 
