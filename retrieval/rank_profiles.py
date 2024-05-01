@@ -260,7 +260,9 @@ if __name__ == "__main__":
         DATASET,
         f"{LAMP_NUM}_user_dev_inputs.json",
     )
-    OUTPUT_RANKING_DIR_PATH = os.path.join(CUR_DIR_PATH, "retrieval_results", DATASET, RANKER)
+    OUTPUT_RANKING_DIR_PATH = os.path.join(
+        CUR_DIR_PATH, "retrieval_results", DATASET, RANKER
+    )
     os.makedirs(OUTPUT_RANKING_DIR_PATH, exist_ok=True)
     OUTPUT_RANKING_FP = os.path.join(OUTPUT_RANKING_DIR_PATH, f"{LAMP_NUM}.json")
 

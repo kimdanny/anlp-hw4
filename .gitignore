@@ -14,6 +14,8 @@ scripts/
 
 # compute logs
 logs/
+logs_output/
+logs_error/
 *.log
 
 # output files

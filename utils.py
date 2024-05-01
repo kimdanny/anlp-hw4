@@ -40,6 +40,10 @@ models_info = {
         "model_id": "meta-llama/Llama-2-70b-hf",
         "hf_pipeline_task": "text-generation",
     },
+    "flanT5Base": {
+        "model_id": "google/flan-t5-base",
+        "hf_pipeline_task": "text2text-generation",
+    },
     "flanT5XXL": {
         "model_id": "google/flan-t5-xxl",
         "hf_pipeline_task": "text2text-generation",
@@ -69,3 +73,25 @@ def trim_sentence_by_token(sentence: str, tokenizer, use_model_max_length=False)
         return truncated_text
     else:
         return sentence
+
+
+def trim_sentence_by_token_len(sentence: str, tokenizer, max_tok_len) -> str:
+    """
+    Take sentence and tokenize using the tokenizer
+    and returns the truncated text if the token length of the sentence exceeds max_tok_len
+    """
+    tokens = tokenizer.tokenize(sentence)
+
+    # If the sentence exceeds the maximum length, truncate the tokens
+    if len(tokens) > max_tok_len:
+        # Truncate the tokens to the max length
+        truncated_tokens = tokens[:max_tok_len]
+        truncated_text = tokenizer.convert_tokens_to_string(truncated_tokens)
+        return truncated_text
+    else:
+        return sentence
+
+
+def get_tokenized_length(sentence: str, tokenizer) -> int:
+    tokens = tokenizer.tokenize(sentence)
+    return len(tokens)
