@@ -108,7 +108,11 @@ def main(args):
             with open(
                 os.path.join(EVAL_RESULTS_DIR_PATH, f"lamp_{LAMP_NUM}_scores.txt"), "w"
             ) as f:
-                f.write(str([round(x, 4) for x in scores_for_ks]))
+                rounded_scores = [round(x, 4) for x in scores_for_ks]
+                f.write(str(rounded_scores))
+                f.write("\n")
+                f.write(f"baseline: {rounded_scores[0]}\n")
+                f.write(f"max: {max(rounded_scores[1:])}")
             f.close()
 
     # Plot scores
